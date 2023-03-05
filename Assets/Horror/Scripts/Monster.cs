@@ -249,13 +249,8 @@ public class Monster : MonoBehaviour
                         // TODO: implement hiding in shadows
                         return true;
                     }
-                    Debug.Log("hit.collider.name is not \"Player\"");
-                    return false;
                 }
-                Debug.Log("Physics.Raycast returned false");
-                return false;
             }
-            Debug.Log("angle too big");
             return false;
         }
     }
@@ -276,11 +271,9 @@ public class Monster : MonoBehaviour
     {
         var length = PathLength(corners);
         var direction = corners[1] - corners[0];
+        var angle = Vector3.Angle(direction, lastSeenPlayerVelocity);
 
-        const float maxAngle = 90;
-
-        // angleFactor will be 0 for paths, angle to which is bigger than maxAngle
-        var angleFactor = Math.MapClamped(Vector3.Angle(direction, lastSeenPlayerVelocity), 0, maxAngle, 1, 0);
+        var angleFactor = Mathf.Pow(Math.MapClamped(angle, 0, 180, 1, 0), 4);
 
         return angleFactor / length;
     }
