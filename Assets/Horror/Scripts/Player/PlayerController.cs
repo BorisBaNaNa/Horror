@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -86,6 +87,7 @@ public class PlayerController : MonoBehaviour
 
     private InputControls _input;
     private CharacterController _characterController;
+    private Coroutine _crouchCoroutine;
     private Vector3 _inputVector;
     private Vector3 _verticalVelocity;
     private Vector3 _horizontalVelocity;
@@ -132,6 +134,8 @@ public class PlayerController : MonoBehaviour
 
         ApplyGravity();
         MovePlayer(_verticalVelocity);
+        CheckHeadbutt();
+
     }
 
     private void OnEnable()
@@ -176,7 +180,7 @@ public class PlayerController : MonoBehaviour
 
         _crouchAction = _ => Crouch();
         _startCrouchAction = _ => StartCrouch();
-        _finishCrouchAction = _ => FinishCrouch();
+        _finishCrouchAction = _ => StartfinishCrouchCoroutine();
     }
 
     private void InitializeInput()
@@ -220,6 +224,13 @@ public class PlayerController : MonoBehaviour
         _lastHoldToCrouch = isCrouching;
     }
 
+    public void TeleportTo(Transform transform_)
+    {
+        _characterController.enabled = false;
+        transform.SetPositionAndRotation(transform_.position, transform_.rotation);
+        _characterController.enabled = true;
+    }
+
     private void ApplyCameraSettings()
     {
         if (MainCamera.fieldOfView != FieldOfView)
@@ -246,7 +257,7 @@ public class PlayerController : MonoBehaviour
         if (_characterController.height == _targetHeight && MainCamera.transform.localPosition == _targetCameraPos)
             return;
 
-        _characterController.height = Mathf.Lerp(_characterController.height, _targetHeight, SpeedReduction * Time.deltaTime);
+        _characterController.height = Mathf.MoveTowards(_characterController.height, _targetHeight, SpeedReduction * Time.deltaTime);
     }
 
     private void SwitchOnHoldOrPress()
@@ -276,6 +287,12 @@ public class PlayerController : MonoBehaviour
             _verticalVelocity += Physics.gravity * 2 * Time.deltaTime;
     }
 
+    private void CheckHeadbutt()
+    {
+        if (IsFlaying && _characterController.collisionFlags == CollisionFlags.Above)
+            _verticalVelocity.y = 0f;
+    }
+
     private void ApplySmooth()
     {
         Vector3 targetVelocity = _inputVector * _currentSpeed;
@@ -285,7 +302,9 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        _verticalVelocity.y = _jumpVelocity;
+        Vector3 spherePos = transform.position - (Vector3.up * (_characterController.height * 0.25f + 0.1f));
+        if (Physics.OverlapSphere(spherePos, _characterController.radius, gameObject.layer).Length > 0)
+            _verticalVelocity.y = _jumpVelocity;
     }
 
     private void Rotate(Vector2 delta)
@@ -378,6 +397,11 @@ public class PlayerController : MonoBehaviour
 
     private void StartCrouch()
     {
+        if (_crouchCoroutine != null)
+        {
+            StopCoroutine(_crouchCoroutine);
+            _crouchCoroutine = null;
+        }
         if (_isCrouching) return;
         if (_isSprinting)
             FinishSprint();
@@ -391,13 +415,31 @@ public class PlayerController : MonoBehaviour
         _currentSwayIntensity *= 0.5f;
     }
 
-    private void FinishCrouch()
+    private bool FinishCrouch()
     {
+        if (Physics.Raycast(transform.position - (Vector3.up * (_characterController.height * 0.5f - 0.05f)), Vector3.up, _heightOriginal, gameObject.layer))
+            return false;
+
         _isCrouching = false;
         _targetHeight = _heightOriginal;
         _targetCameraPos = CameraPos;
         _currentSpeed = WalkSpeed;
         _currentSwayIntensity = SwayIntensity;
+        return true;
     }
 
+    private void StartfinishCrouchCoroutine()
+    {
+        _crouchCoroutine = StartCoroutine(FinishCrouchRoutime());
+    }
+
+    private IEnumerator FinishCrouchRoutime()
+    {
+        while (!FinishCrouch())
+        {
+            // Debug.Log("Can't stay up!");
+            yield return new WaitForSeconds(0.1f);
+        }
+        _crouchCoroutine = null;
+    }
 }
