@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 273430685}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -14.07, y: 3.45, z: 2.04}
+  m_LocalPosition: {x: -14.07, y: 2.24, z: 2.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -263,7 +263,7 @@ GameObject:
   - component: {fileID: 773198779}
   - component: {fileID: 773198778}
   - component: {fileID: 773198777}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 1267956871}
   - component: {fileID: 1267956870}
   - component: {fileID: 1267956869}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -843,7 +843,7 @@ GameObject:
   - component: {fileID: 1943728402}
   - component: {fileID: 1943728401}
   - component: {fileID: 1943728400}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -940,7 +940,7 @@ GameObject:
   - component: {fileID: 2012215008}
   - component: {fileID: 2012215007}
   - component: {fileID: 2012215006}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1036,7 +1036,7 @@ GameObject:
   - component: {fileID: 2143979047}
   - component: {fileID: 2143979046}
   - component: {fileID: 2143979045}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1153,18 +1153,6 @@ PrefabInstance:
     - target: {fileID: 4049104093871685862, guid: 667e2eb19fadab847b3a9c2efc36b4d9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4049104093871685863, guid: 667e2eb19fadab847b3a9c2efc36b4d9, type: 3}
-      propertyPath: JumpPeriod
-      value: 0.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4049104093871685863, guid: 667e2eb19fadab847b3a9c2efc36b4d9, type: 3}
-      propertyPath: HoldToCrouch
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4049104093871685863, guid: 667e2eb19fadab847b3a9c2efc36b4d9, type: 3}
-      propertyPath: AccelerationTimeGrounded
-      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 4049104093871685869, guid: 667e2eb19fadab847b3a9c2efc36b4d9, type: 3}
       propertyPath: m_Name

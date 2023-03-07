@@ -129,7 +129,7 @@ MonoBehaviour:
   Amplitude: 0.25
   EnableMoovement: 1
   WalkSpeed: 10
-  AccelerationTimeGrounded: 0.1
+  AccelerationTimeGrounded: 0.05
   EnableSprint: 1
   HoldToSprint: 1
   UnlimitedSprint: 0
@@ -139,10 +139,13 @@ MonoBehaviour:
   FatigueRatio: 1
   RelaxRatio: 1.5
   EnableJump: 1
-  JumpPeriod: 1
+  JumpPeriod: 0.8
   AccelerationTimeAirbone: 0.3
+  GroundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   EnableCrouch: 1
-  HoldToCrouch: 1
+  HoldToCrouch: 0
   CrouchHeightRatio: 0.6
   CrouchSpeed: 5
   SpeedReduction: 10

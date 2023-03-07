@@ -65,6 +65,8 @@ public class PlayerController : MonoBehaviour
     private float JumpPeriod = 1f;
     [SerializeField]
     private float AccelerationTimeAirbone = 0.3f;
+    [SerializeField]
+    private LayerMask GroundLayerMask;
 
     [Header("Crouch")]
     public bool EnableCrouch = true;
@@ -303,7 +305,7 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         Vector3 spherePos = transform.position - (Vector3.up * (_characterController.height * 0.25f + 0.1f));
-        if (Physics.OverlapSphere(spherePos, _characterController.radius, gameObject.layer).Length > 0)
+        if (Physics.OverlapSphere(spherePos, _characterController.radius, GroundLayerMask).Length > 0)
             _verticalVelocity.y = _jumpVelocity;
     }
 
