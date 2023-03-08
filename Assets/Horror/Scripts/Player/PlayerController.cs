@@ -419,7 +419,7 @@ public class PlayerController : MonoBehaviour
 
     private bool FinishCrouch()
     {
-        if (Physics.Raycast(transform.position - (Vector3.up * (_characterController.height * 0.5f - 0.05f)), Vector3.up, _heightOriginal, gameObject.layer))
+        if (Physics.Raycast(transform.position - (Vector3.up * (_characterController.height * 0.5f - 0.05f)), Vector3.up, _heightOriginal, GetLayerMask()))
             return false;
 
         _isCrouching = false;
@@ -444,4 +444,6 @@ public class PlayerController : MonoBehaviour
         }
         _crouchCoroutine = null;
     }
+
+    private int GetLayerMask() => ~(1 << gameObject.layer);
 }
