@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4049104093871685869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4049104093871685862}
+  - component: {fileID: 4049104093871685866}
+  - component: {fileID: 4049104093871685863}
+  m_Layer: 3
+  m_Name: Player
+  m_TagString: Player
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4049104093871685862
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4049104093871685869}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.4144583, y: 4.7, z: -2.0478902}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!143 &4049104093871685866
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4049104093871685869}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4049104093871685863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4049104093871685869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e7f4f3b92ff46e49a158775afd94802, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MainCamera: {fileID: 0}
+  EnableCameraRotation: 1
+  InvertCameraXRotation: 0
+  InvertCameraYRotation: 0
+  MouseSencitivity: {x: 0.5, y: 0.5}
+  FieldOfView: 60
+  CameraPos: {x: 0, y: 0.7, z: 0.3}
+  MinY: -85
+  MaxY: 85
+  EnableSwayCamera: 1
+  IdleAmplitude: 1
+  IdleFrequency: 0.01
+  WalkAmplitude: 2
+  WalkFrequency: 0.03
+  CrouchAmplitude: 0.5
+  CrouchFrequency: 0.03
+  SprintAmplitude: 2
+  SprintFrequency: 0.07
+  EnableMoovement: 1
+  WalkSpeed: 10
+  AccelerationTimeGrounded: 0.05
+  EnableSprint: 1
+  HoldToSprint: 1
+  UnlimitedSprint: 0
+  SprintSpeed: 15
+  SprintDuration: 10
+  SprintCooldown: 1
+  FatigueRatio: 1
+  RelaxRatio: 1.5
+  EnableJump: 1
+  JumpPeriod: 0.8
+  AccelerationTimeAirbone: 0.3
+  GroundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  EnableCrouch: 1
+  HoldToCrouch: 0
+  CrouchHeightRatio: 0.6
+  CrouchSpeed: 5
+  SpeedReduction: 10
