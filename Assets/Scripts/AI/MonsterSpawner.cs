@@ -18,21 +18,21 @@ public class MonsterSpawner : MonoBehaviour
     [Tooltip("Monster will always spawn when this time has passed")]
     [SerializeField] private float timeBeforeSpawn = 60;
 
-    [Tooltip("Monster will spawn if player walked this far")]
-    [SerializeField] private float playerWalkDistanceBeforeSpawn = 50;
+	// [Tooltip("Monster will spawn if player walked this far")]
+	// [SerializeField] private float playerWalkDistanceBeforeSpawn = 50;
 
-    private float timePassed;
-    private float playerDistanceTraveled;
-    private Vector3 playerLastPosition;
-    private bool spawned;
+	private float timePassed;
+	// private float playerDistanceTraveled;
+	// private Vector3 playerLastPosition;
+	private bool spawned;
     private void Update()
     {
         if (!spawned)
         {
             timePassed += Time.deltaTime;
-            playerDistanceTraveled += Vector3.Distance(playerLastPosition, player.transform.position);
+          //  playerDistanceTraveled += Vector3.Distance(playerLastPosition, player.transform.position);
 
-            if (timePassed >= timeBeforeSpawn || playerDistanceTraveled >= playerWalkDistanceBeforeSpawn)
+            if (timePassed >= timeBeforeSpawn/* || playerDistanceTraveled >= playerWalkDistanceBeforeSpawn*/)
             {
                 // Select spawn point that is at the right distance from the player
                 // FIXME: this uses world distance, should use navmesh distance.
@@ -43,9 +43,9 @@ public class MonsterSpawner : MonoBehaviour
                 Spawn(selectedSpawnPoint.position);
             }
 
-            playerLastPosition = player.transform.position;
-        }
-    }
+			//  playerLastPosition = player.transform.position;
+		}
+	}
 
     public void Spawn(Vector3 position)
 	{
@@ -57,9 +57,6 @@ public class MonsterSpawner : MonoBehaviour
 	private void OnDrawGizmosSelected()
 	{
         if (player)
-		{
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(player.transform.position, targetSpawnDistance);
-		}
+            DebugGizmos.DrawCircle(player.transform.position, Quaternion.identity, targetSpawnDistance, Color.yellow);
 	}
 }

@@ -109,8 +109,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(1f, 10f)]
     private float SpeedReduction = 1f;
 
+    [Header("Step Audio")]
+	[SerializeField]
+	private AudioClip[] StepClips;
+	[SerializeField, Tooltip("Измеряется в секундах")]
+	private float StepWalkPeriod = 0.6f;
+	[SerializeField]
+	private float StepWalkVolume = 0.5f;
+	[SerializeField, Tooltip("Измеряется в секундах")]
+	private float StepSprintPeriod = 0.3f;
+	[SerializeField]
+	private float StepSprintVolume = 1;
+	[SerializeField, Tooltip("Измеряется в метрах. Умножается на громкость шага")]
+	private float StepHearRadius = 20;
 
-    private Action<InputAction.CallbackContext> _sprintAction;
+	private Action<InputAction.CallbackContext> _sprintAction;
     private Action<InputAction.CallbackContext> _startSprintAction;
     private Action<InputAction.CallbackContext> _finishSprintAction;
     private Action<InputAction.CallbackContext> _crouchAction;
@@ -146,7 +159,11 @@ public class PlayerController : MonoBehaviour
     private float _currentSwayIntensity;
 #endif
 
-    private void Awake()
+    private float _timeUntilStep;
+    private int _nextStepClipIndex;
+
+
+	private void Awake()
     {
         Initialize();
         InitializeActions();
@@ -168,8 +185,9 @@ public class PlayerController : MonoBehaviour
 
         ApplySmooth();
         MovePlayer(_horizontalVelocity);
+        PlaySteps(_horizontalVelocity);
 
-        ApplyGravity();
+		ApplyGravity();
         MovePlayer(_verticalVelocity);
         CheckHeadbutt();
 
@@ -390,7 +408,25 @@ public class PlayerController : MonoBehaviour
     private void MovePlayer(Vector3 movement)
     {
         _characterController.Move(transform.rotation * movement * Time.deltaTime);
-    }
+	}
+    private void PlaySteps(Vector3 movement)
+    {
+        if (movement.magnitude > 0.01f)
+        {
+            _timeUntilStep -= Time.deltaTime / (_isSprinting ? StepSprintPeriod : StepWalkPeriod);
+		    if (_timeUntilStep <= 0)
+		    {
+                _timeUntilStep += 1;
+
+				AudioSystem.PlayListenable(StepClips[_nextStepClipIndex++], transform.position, radius: StepHearRadius, volume: _isSprinting ? StepSprintVolume : StepWalkVolume);
+			    if (_nextStepClipIndex >= StepClips.Length)
+			    {
+				    _nextStepClipIndex = 0;
+				    StepClips.Shuffle();
+			    }
+            }
+		}
+	}
 
     private void ApplyGravity()
     {
