@@ -64,12 +64,6 @@ public static class Extensions
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static void Sort<T>(this List<T> list, System.Func<T, float> func)
-	{
-		list.Sort((a, b) => (int)Mathf.Sign(func(a) - func(b)));
-	}
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static List<T> SortedBy<T>(this IEnumerable<T> enumerable, System.Func<T, float> func)
 	{
 		var result = enumerable.ToList();
@@ -128,14 +122,39 @@ public static class Extensions
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static IEnumerable<T> Last<T>(this IEnumerable<T> enumerable, int n)
+	public static IEnumerable<T> SomeLast<T>(this IEnumerable<T> enumerable, int limit)
 	{
+		if (limit <= 0)
+			throw new System.ArgumentOutOfRangeException(nameof(limit));
+
 		var array = enumerable.ToArray();
-		for (int i = 0; i < n; ++i)
+
+		for (int i = Mathf.Max(0, array.Length - limit); i < array.Length; ++i)
 		{
-			yield return array[array.Length - n + i];
+			yield return array[i];
 		}
 	}
+
+
+	//////////////////////
+	// Array extensions //
+	//////////////////////
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void Shuffle<T>(this T[] array)
+	{
+		var random = new System.Random();
+		for (int i = 0; i < array.Length; ++i)
+		{
+			const int randomPrimeNumber = 1361;
+			var randomIndex = i + random.Next() / randomPrimeNumber % (array.Length - i);
+
+			var tmp = array[i];
+			array[i] = array[randomIndex];
+			array[randomIndex] = tmp;
+		}
+	}
+
 
 	/////////////////////
 	// List extensions //
@@ -163,6 +182,28 @@ public static class Extensions
 		return true;
 	}
 
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void Shuffle<T>(this List<T> list)
+	{
+		var random = new System.Random();
+		for (int i = 0; i < list.Count; ++i)
+		{
+			const int randomPrimeNumber = 1361;
+			var randomIndex = i + random.Next() / randomPrimeNumber % (list.Count - i);
+
+			var tmp = list[i];
+			list[i] = list[randomIndex];
+			list[randomIndex] = tmp;
+		}
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void Sort<T>(this List<T> list, System.Func<T, float> func)
+	{
+		list.Sort((a, b) => (int)Mathf.Sign(func(a) - func(b)));
+	}
+
+
 
 	////////////////////////////
 	// IEnumerator extensions //
@@ -178,6 +219,7 @@ public static class Extensions
 		while (enumerator.MoveNext())
 			yield return enumerator.Current;
 	}
+
 
 	//////////////////////////
 	// Transform extensions //

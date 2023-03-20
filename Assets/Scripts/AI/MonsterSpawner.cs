@@ -57,9 +57,6 @@ public class MonsterSpawner : MonoBehaviour
 	private void OnDrawGizmosSelected()
 	{
         if (player)
-		{
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(player.transform.position, targetSpawnDistance);
-		}
+            DebugGizmos.DrawCircle(player.transform.position, Quaternion.identity, targetSpawnDistance, Color.yellow);
 	}
 }
