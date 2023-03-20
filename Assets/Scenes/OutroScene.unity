@@ -612,7 +612,7 @@ VideoPlayer:
   - {fileID: 0}
   m_DirectAudioVolumes:
   - 1
-  m_Url: file://C:/Users/nik/Downloads/projUnity/Backrooms/Assets/StreamingAssets/Elevator.webm
+  m_Url: Assets/StreamingAssets/Elevator.webm
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
   m_ControlledAudioTrackCount: 1
@@ -804,7 +804,7 @@ VideoPlayer:
   - {fileID: 0}
   m_DirectAudioVolumes:
   - 1
-  m_Url: file://C:/Users/nik/Downloads/projUnity/Backrooms/Assets/StreamingAssets/Outro.webm
+  m_Url: Assets/StreamingAssets/Outro.webm
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
   m_ControlledAudioTrackCount: 1

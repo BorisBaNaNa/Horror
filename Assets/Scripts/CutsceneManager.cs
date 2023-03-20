@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CutsceneManager : MonoBehaviour
 {
-    public GameObject cutsceneElevator;
+    public GameObject cutsceneStart;
     public GameObject cutsceneEnding;
     private GameObject cutscene;
 
@@ -14,23 +14,24 @@ public class CutsceneManager : MonoBehaviour
 
     void Start()
     {
-        cutscene = cutsceneElevator;
+        cutscene = cutsceneStart;
     }
 
     public void endCutscene()
     {
         cutscene.SetActive(false);
         cameraBrain.SetActive(false);
-        player.SetActive(true);
+        player.GetComponent<PlayerController>().enabled = true;
         playerCutsceneCamera.SetActive(false);
-        cutscene = cutsceneEnding;
+
     }
 
     public void startCutscene()
     {
+        cutscene = cutsceneEnding;
         cutscene.SetActive(true);
         cameraBrain.SetActive(true);
-        player.SetActive(false);
+        player.GetComponent<PlayerController>().enabled = false;
         playerCutsceneCamera.SetActive(true);
     }
 }
