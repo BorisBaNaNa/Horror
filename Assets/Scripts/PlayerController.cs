@@ -120,6 +120,10 @@ public class PlayerController : MonoBehaviour
 	private float StepSprintPeriod = 0.3f;
 	[SerializeField]
 	private float StepSprintVolume = 1;
+	[SerializeField, Tooltip("Измеряется в секундах")]
+	private float StepCrouchPeriod = 0.5f;
+	[SerializeField]
+	private float StepCrouchVolume = 0.25f;
 	[SerializeField, Tooltip("Измеряется в метрах. Умножается на громкость шага")]
 	private float StepHearRadius = 20;
 
@@ -413,12 +417,15 @@ public class PlayerController : MonoBehaviour
     {
         if (movement.magnitude > 0.01f)
         {
-            _timeUntilStep -= Time.deltaTime / (_isSprinting ? StepSprintPeriod : StepWalkPeriod);
+            float volume = _isSprinting ? StepSprintVolume : _isCrouching ? StepCrouchVolume : StepWalkVolume;
+            float period = _isSprinting ? StepSprintPeriod : _isCrouching ? StepCrouchPeriod : StepWalkPeriod;
+
+			_timeUntilStep -= Time.deltaTime / period;
 		    if (_timeUntilStep <= 0)
 		    {
                 _timeUntilStep += 1;
 
-				AudioSystem.PlayListenable(StepClips[_nextStepClipIndex++], transform.position, radius: StepHearRadius, volume: _isSprinting ? StepSprintVolume : StepWalkVolume);
+				AudioSystem.PlayListenable(StepClips[_nextStepClipIndex++], transform.position, radius: StepHearRadius, volume: volume);
 			    if (_nextStepClipIndex >= StepClips.Length)
 			    {
 				    _nextStepClipIndex = 0;
