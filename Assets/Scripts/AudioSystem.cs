@@ -11,7 +11,7 @@ public class AudioSystem : MonoBehaviour
 	{
 		The.AllSoundListeners.Add(listener);
 	}
-	public static AudioSource CreateGameObjectWithAudio(AudioClip clip, float volume = 1, float pitch = 1, object limiter = null, float extraDestroyDelay = 0.1f)
+	public static AudioSource CreateGameObjectWithAudio(AudioClip clip, float volume = 1, float pitch = 1, object limiter = null, float extraDestroyDelay = 0.1f, bool raytraced = false)
 	{
 		if (limiter is not null)
 		{
@@ -39,6 +39,24 @@ public class AudioSystem : MonoBehaviour
 		source.spatialBlend = 1;
 		source.spread = 0;
 
+		if (raytraced)
+		{
+			source.spatialize = true;
+			var steamSource = source.gameObject.AddComponent<SteamAudio.SteamAudioSource>();
+			steamSource.distanceAttenuation = true;
+			steamSource.distanceAttenuationInput = SteamAudio.DistanceAttenuationInput.PhysicsBased;
+			steamSource.airAbsorption = true;
+			steamSource.airAbsorptionInput = SteamAudio.AirAbsorptionInput.SimulationDefined;
+			steamSource.occlusion = true;
+			steamSource.occlusionInput = SteamAudio.OcclusionInput.SimulationDefined;
+			steamSource.transmission = true;
+			steamSource.transmissionInput = SteamAudio.TransmissionInput.SimulationDefined;
+			steamSource.transmissionType = SteamAudio.TransmissionType.FrequencyDependent;
+			steamSource.reflections = true;
+			steamSource.reflectionsType = SteamAudio.ReflectionsType.Realtime;
+			steamSource.applyHRTFToReflections = true;
+		}
+
 		source.Play();
 
 		if (limiter is not null)
@@ -46,45 +64,35 @@ public class AudioSystem : MonoBehaviour
 
 		return source;
 	}
-	public static AudioSource Play(AudioClip clip, Vector3 position, float volume = 1, float pitch = 1, object limiter = null, float extraDestroyDelay = 0.1f)
+	public static AudioSource Play(AudioClip clip, Vector3 localPosition = default, Transform parent = null, float volume = 1, float pitch = 1, object limiter = null, float extraDestroyDelay = 0.1f, bool raytraced = false, bool listenable = false, float radius = 50)
 	{
-		var source = CreateGameObjectWithAudio(clip: clip, volume: volume, pitch: pitch, limiter: limiter, extraDestroyDelay: extraDestroyDelay);
-		if (source)
-			source.transform.position = position;
-		return source;
-	}
-	public static AudioSource Play(AudioClip clip, Transform parent, float volume = 1, float pitch = 1, object limiter = null, float extraDestroyDelay = 0.1f)
-	{
-		var source = CreateGameObjectWithAudio(clip: clip, volume: volume, pitch: pitch, limiter: limiter, extraDestroyDelay: extraDestroyDelay);
+		var source = CreateGameObjectWithAudio(clip: clip, volume: volume, pitch: pitch, limiter: limiter, extraDestroyDelay: extraDestroyDelay, raytraced: raytraced);
 		if (source)
 		{
 			source.transform.parent = parent;
-			source.transform.SetLocalPositionAndRotation(default, Quaternion.identity);
-		}
-		return source;
-	}
-	public static void PlayListenable(AudioClip clip, Vector3 position, float radius, float volume = 1, float pitch = 1, object limiter = null, float extraDestroyDelay = 0.1f)
-	{
-		var source = Play(clip: clip, position: position, volume: volume, pitch: pitch, extraDestroyDelay: extraDestroyDelay);
-		if (source is null)
-			return;
+			source.transform.localPosition = localPosition;
 
-		var gizmos = source.gameObject.AddComponent<DebugGizmos>();
-		gizmos.kind = DebugGizmos.Kind.Circle;
-		gizmos.radius = radius;
-		gizmos.color = Color.yellow;
-
-		foreach (var listener in The.AllSoundListeners)
-		{
-			var distance = NavMeshUtils.PathLength(listener.ListenerPosition, position);
-
-			float listenVolume = Math.MapClamped(distance, 0, radius, 1, 0);
-
-			if (listenVolume > 0)
+			if (listenable)
 			{
-				listener.Listen(position, listenVolume);
+				var gizmos = source.gameObject.AddComponent<DebugGizmos>();
+				gizmos.kind = DebugGizmos.Kind.Circle;
+				gizmos.radius = radius;
+				gizmos.color = Color.yellow;
+
+				foreach (var listener in The.AllSoundListeners)
+				{
+					var distance = NavMeshUtils.PathLength(listener.ListenerPosition, source.transform.position);
+
+					float listenVolume = Math.MapClamped(distance, 0, radius, 1, 0);
+
+					if (listenVolume > 0)
+					{
+						listener.Listen(source.transform.position, listenVolume);
+					}
+				}
 			}
 		}
+		return source;
 	}
 
 	private void Awake()

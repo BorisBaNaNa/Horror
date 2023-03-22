@@ -18,42 +18,52 @@ public class MonsterSpawner : MonoBehaviour
     [Tooltip("Monster will always spawn when this time has passed")]
     [SerializeField] private float timeBeforeSpawn = 60;
 
-	// [Tooltip("Monster will spawn if player walked this far")]
-	// [SerializeField] private float playerWalkDistanceBeforeSpawn = 50;
-
-	private float timePassed;
-	// private float playerDistanceTraveled;
-	// private Vector3 playerLastPosition;
 	private bool spawned;
-    private void Update()
+
+    private IEnumerator Start()
     {
-        if (!spawned)
-        {
-            timePassed += Time.deltaTime;
-          //  playerDistanceTraveled += Vector3.Distance(playerLastPosition, player.transform.position);
+		yield return new WaitForSecondsRealtime(timeBeforeSpawn);
 
-            if (timePassed >= timeBeforeSpawn/* || playerDistanceTraveled >= playerWalkDistanceBeforeSpawn*/)
-            {
-                // Select spawn point that is at the right distance from the player
-                // FIXME: this uses world distance, should use navmesh distance.
-                var selectedSpawnPoint = initialSpawnPositionsParent
-                    .GetChildren()
-                    .MinValue(p => Mathf.Abs(Vector3.Distance(p.position, player.transform.position) - targetSpawnDistance + Random.value * targetSpawnDistanceRandomSpread));
+		if (spawned)
+			yield break;
 
-                Spawn(selectedSpawnPoint.position);
-            }
-
-			//  playerLastPosition = player.transform.position;
-		}
+		SpawnAtDistance(player.transform.position, targetSpawnDistance, targetSpawnDistanceRandomSpread);
 	}
 
-    public void Spawn(Vector3 position)
+	public void Spawn(Vector3 position)
 	{
-        spawned = true;
+		spawned = true;
 
-        monster.transform.position = position;
-        monster.SetActive(true);
-    }
+		monster.transform.position = position;
+		monster.SetActive(true);
+	}
+	public void SpawnAtDistance(Vector3 position, float distance, float randomFactor = 0)
+	{
+		// FIXME: this uses world distance, maybe should use navmesh distance?
+
+		var selectedSpawnPoint = initialSpawnPositionsParent
+			.GetChildren()
+			.MinValue(p => Mathf.Abs(Vector3.Distance(p.position, position) - distance + Random.value * randomFactor));
+
+		Spawn(selectedSpawnPoint.position);
+	}
+	public void SpawnInRange(Vector3 position, float minDistance, float maxDistance)
+	{
+		// FIXME: this uses world distance, maybe should use navmesh distance?
+
+		var closeSpawnPoints = initialSpawnPositionsParent
+			.GetChildren()
+			.Where(p => InRange(Vector3.Distance(p.position, position), minDistance, maxDistance));
+
+		if (closeSpawnPoints.Count() != 0)
+			Spawn(closeSpawnPoints.GetRandom().position);
+		else
+			SpawnAtDistance(position, minDistance);
+	}
+	private bool InRange(float value, float min, float max)
+	{
+		return min <= value && value <= max;
+	}
 	private void OnDrawGizmosSelected()
 	{
         if (player)

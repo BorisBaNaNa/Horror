@@ -160,7 +160,7 @@ public class Monster : MonoBehaviour, ISoundListener
     }
     private void Scream()
     {
-        var source = AudioSystem.Play(screamClips[screamClipIndex], transform.position, limiter: this);
+        var source = AudioSystem.Play(screamClips[screamClipIndex], transform.position, limiter: this, raytraced: true);
 
         if (source)
 		{
@@ -169,34 +169,6 @@ public class Monster : MonoBehaviour, ISoundListener
 				screamClipIndex = 0;
 				screamClips.Shuffle();
 			}
-
-#if true
-            source.spatialize = true;
-            var steamSource = source.gameObject.AddComponent<SteamAudio.SteamAudioSource>();
-            steamSource.distanceAttenuation = true;
-            steamSource.distanceAttenuationInput = SteamAudio.DistanceAttenuationInput.PhysicsBased;
-			steamSource.airAbsorption = true;
-			steamSource.airAbsorptionInput = SteamAudio.AirAbsorptionInput.SimulationDefined;
-            steamSource.occlusion = true;
-            steamSource.occlusionInput = SteamAudio.OcclusionInput.SimulationDefined;
-            steamSource.transmission = true;
-			steamSource.transmissionInput = SteamAudio.TransmissionInput.SimulationDefined;
-			steamSource.transmissionType = SteamAudio.TransmissionType.FrequencyDependent;
-            steamSource.reflections = true;
-            steamSource.reflectionsType = SteamAudio.ReflectionsType.Realtime;
-            steamSource.applyHRTFToReflections = true;
-#else
-            var muffler = source.gameObject.AddComponent<ImmersiveAudioSource>();
-            muffler.MinDistance = screamMinDistance;
-            muffler.Volume = screamVolume;
-            muffler.GetDistanceVisibilityAndFirstCorner = () =>
-            {
-                var path = NavMeshUtils.Path(transform.position, player.transform.position);
-                if (path is null)
-                    return (Vector3.Distance(transform.position, player.transform.position), PlayerCanBeSeen, transform.position);
-				return (NavMeshUtils.PathLength(path), PlayerCanBeSeen, path.Length >= 2 ? path[path.Length - 2] : transform.position);
-            };
-#endif
 		}
 	}
 	private void FixedUpdate()

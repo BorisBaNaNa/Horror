@@ -3,8 +3,8 @@
 using Cinemachine;
 #endif
 
-using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -110,29 +110,40 @@ public class PlayerController : MonoBehaviour
     private float SpeedReduction = 1f;
 
     [Header("Step Audio")]
-	[SerializeField]
-	private AudioClip[] StepClips;
-	[SerializeField, Tooltip("Измеряется в секундах")]
-	private float StepWalkPeriod = 0.6f;
-	[SerializeField]
-	private float StepWalkVolume = 0.5f;
-	[SerializeField, Tooltip("Измеряется в секундах")]
-	private float StepSprintPeriod = 0.3f;
-	[SerializeField]
-	private float StepSprintVolume = 1;
-	[SerializeField, Tooltip("Измеряется в секундах")]
-	private float StepCrouchPeriod = 0.5f;
-	[SerializeField]
-	private float StepCrouchVolume = 0.25f;
-	[SerializeField, Tooltip("Измеряется в метрах. Умножается на громкость шага")]
-	private float StepHearRadius = 20;
+	[SerializeField] private AudioClip[] StepClips;
+    [Tooltip("Измеряется в секундах")]
+	[SerializeField] private float StepWalkPeriod = 0.6f;
+	[SerializeField] private float StepWalkVolume = 0.5f;
+    [Tooltip("Измеряется в секундах")]
+	[SerializeField] private float StepSprintPeriod = 0.3f;
+	[SerializeField] private float StepSprintVolume = 1;
+    [Tooltip("Измеряется в секундах")]
+	[SerializeField] private float StepCrouchPeriod = 0.5f;
+	[SerializeField] private float StepCrouchVolume = 0.25f;
+    [Tooltip("Измеряется в метрах. Умножается на громкость шага")]
+	[SerializeField] private float StepHearRadius = 20;
 
-	private Action<InputAction.CallbackContext> _sprintAction;
-    private Action<InputAction.CallbackContext> _startSprintAction;
-    private Action<InputAction.CallbackContext> _finishSprintAction;
-    private Action<InputAction.CallbackContext> _crouchAction;
-    private Action<InputAction.CallbackContext> _startCrouchAction;
-    private Action<InputAction.CallbackContext> _finishCrouchAction;
+    [Header("Talk")]
+	[SerializeField] private AudioClip[] TalkClips;
+	[SerializeField] private float TalkVolume = 0.4f;
+	[SerializeField] private float TalkPeriod = 5;
+
+	[SerializeField] private MonsterSpawner MonsterSpawner;
+    [SerializeField] private float MonsterTalkDelay = 2;
+    [SerializeField] private int MonsterTalkRepeatCount = 3;
+	[SerializeField] private float MonsterTalkStartVolume = 0.1f;
+	[SerializeField] private float MonsterTalkEndVolume = 1;
+	[SerializeField] private float MonsterTalkStartPitch = 0.9f;
+	[SerializeField] private float MonsterTalkEndPitch = 0.5f;
+	[SerializeField] private float MonsterTalkSpawnMinDistance = 10;
+	[SerializeField] private float MonsterTalkSpawnMaxDistance = 20;
+
+	private System.Action<InputAction.CallbackContext> _sprintAction;
+    private System.Action<InputAction.CallbackContext> _startSprintAction;
+    private System.Action<InputAction.CallbackContext> _finishSprintAction;
+    private System.Action<InputAction.CallbackContext> _crouchAction;
+    private System.Action<InputAction.CallbackContext> _startCrouchAction;
+    private System.Action<InputAction.CallbackContext> _finishCrouchAction;
 
     private InputControls _input;
     private CharacterController _characterController;
@@ -165,6 +176,9 @@ public class PlayerController : MonoBehaviour
 
     private float _timeUntilStep;
     private int _nextStepClipIndex;
+	
+    private bool _canTalk = true;
+    private int _timesTalked;
 
 
 	private void Awake()
@@ -226,9 +240,53 @@ public class PlayerController : MonoBehaviour
         _targetHeight = _heightOriginal = _characterController.height;
         _targetCameraPos = CameraPos;
 
+        _input.Player.Talk.performed += _ =>
+        {
+            if (!_canTalk)
+                return;
+			_canTalk = false;
+
+			AudioSystem.Play(TalkClips[_timesTalked++], parent: transform, volume: TalkVolume);
+
+            if (_timesTalked >= TalkClips.Length)
+            {
+                StartCoroutine(MonsterTalkRepeatCoroutine());
+			}
+			else
+            {
+				StartCoroutine(TalkDelayCoroutine());
+            }
+        };
     }
 
-    private void InitializeActions()
+    private IEnumerator TalkDelayCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(TalkPeriod);
+        _canTalk = _timesTalked < TalkClips.Length;
+	}
+    private IEnumerator MonsterTalkRepeatCoroutine()
+    {
+        for (int i = 0; i < MonsterTalkRepeatCount; ++i)
+        {
+            yield return new WaitForSecondsRealtime(MonsterTalkDelay);
+
+            var t = (float)i / (MonsterTalkRepeatCount - 1);
+
+			AudioSystem.Play(
+                TalkClips.Last(),
+                localPosition: Random.onUnitSphere,
+                parent: transform, 
+                volume: Mathf.Lerp(MonsterTalkStartVolume, MonsterTalkEndVolume, t),
+                pitch: Mathf.Lerp(MonsterTalkStartPitch, MonsterTalkEndPitch, t),
+                raytraced: true
+            );
+        }
+
+        yield return new WaitForSecondsRealtime(MonsterTalkDelay);
+        MonsterSpawner.SpawnInRange(transform.position, MonsterTalkSpawnMinDistance, MonsterTalkSpawnMaxDistance);
+    }
+
+	private void InitializeActions()
     {
         _sprintAction = _ => Sprint();
         _startSprintAction = _ => StartSprint();
@@ -425,7 +483,7 @@ public class PlayerController : MonoBehaviour
 		    {
                 _timeUntilStep += 1;
 
-				AudioSystem.PlayListenable(StepClips[_nextStepClipIndex++], transform.position, radius: StepHearRadius, volume: volume);
+				AudioSystem.Play(StepClips[_nextStepClipIndex++], localPosition: transform.position, listenable: true, radius: StepHearRadius, volume: volume);
 			    if (_nextStepClipIndex >= StepClips.Length)
 			    {
 				    _nextStepClipIndex = 0;

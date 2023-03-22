@@ -11142,7 +11142,7 @@ MonoBehaviour:
   initialSpawnPositionsParent: {fileID: 2528586217368299255}
   targetSpawnDistance: 40
   targetSpawnDistanceRandomSpread: 5
-  timeBeforeSpawn: 10
+  timeBeforeSpawn: 120
 --- !u!4 &2528586217368299255
 Transform:
   m_ObjectHideFlags: 0
@@ -11489,6 +11489,22 @@ MonoBehaviour:
   StepCrouchPeriod: 0.5
   StepCrouchVolume: 0.25
   StepHearRadius: 20
+  TalkClips:
+  - {fileID: 8300000, guid: 5e4909a06c96361478fccb61c9bdaff2, type: 3}
+  - {fileID: 8300000, guid: c8eccfb394c627b41b8a0361306bb33f, type: 3}
+  - {fileID: 8300000, guid: eb86c5b66a5e2ab40bc6a75321705e45, type: 3}
+  - {fileID: 8300000, guid: 952794a7373273742a76d334ddfd728a, type: 3}
+  TalkVolume: 0.2
+  TalkPeriod: 1
+  MonsterSpawner: {fileID: 2528586217368299254}
+  MonsterTalkDelay: 2
+  MonsterTalkRepeatCount: 3
+  MonsterTalkStartVolume: 0.05
+  MonsterTalkEndVolume: 0.4
+  MonsterTalkStartPitch: 0.9
+  MonsterTalkEndPitch: 0.5
+  MonsterTalkSpawnMinDistance: 20
+  MonsterTalkSpawnMaxDistance: 30
 --- !u!4 &4049104092191258879
 Transform:
   m_ObjectHideFlags: 0
