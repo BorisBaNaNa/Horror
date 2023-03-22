@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cb82a87a4954a947923856a12b49b38, type: 3}
   m_Name: Main Scene Audio Material
   m_EditorClassIdentifier: 
-  lowFreqAbsorption: 0.1
-  midFreqAbsorption: 0.1
-  highFreqAbsorption: 0.1
-  scattering: 0.5
+  lowFreqAbsorption: 0.01
+  midFreqAbsorption: 0.01
+  highFreqAbsorption: 0.01
+  scattering: 0.1
   lowFreqTransmission: 0.1
   midFreqTransmission: 0.1
   highFreqTransmission: 0.1
