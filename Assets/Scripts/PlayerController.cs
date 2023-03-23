@@ -129,12 +129,17 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private float TalkPeriod = 5;
 
 	[SerializeField] private MonsterSpawner MonsterSpawner;
-    [SerializeField] private float MonsterTalkDelay = 2;
-    [SerializeField] private int MonsterTalkRepeatCount = 3;
-	[SerializeField] private float MonsterTalkStartVolume = 0.1f;
-	[SerializeField] private float MonsterTalkEndVolume = 1;
-	[SerializeField] private float MonsterTalkStartPitch = 0.9f;
-	[SerializeField] private float MonsterTalkEndPitch = 0.5f;
+
+    [System.Serializable]
+    private struct MonsterTalk
+    {
+        public float delay;
+        public float volume;
+        public float pitch;
+    }
+
+    [SerializeField] private MonsterTalk[] MonsterTalks;
+	[SerializeField] private float MonsterTalkSpawnDelay = 2;
 	[SerializeField] private float MonsterTalkSpawnMinDistance = 10;
 	[SerializeField] private float MonsterTalkSpawnMaxDistance = 20;
 
@@ -266,23 +271,21 @@ public class PlayerController : MonoBehaviour
 	}
     private IEnumerator MonsterTalkRepeatCoroutine()
     {
-        for (int i = 0; i < MonsterTalkRepeatCount; ++i)
+        foreach (var monsterTalk in MonsterTalks)
         {
-            yield return new WaitForSecondsRealtime(MonsterTalkDelay);
+            yield return new WaitForSecondsRealtime(monsterTalk.delay);
 
-            var t = (float)i / (MonsterTalkRepeatCount - 1);
-
-			AudioSystem.Play(
+			var source = AudioSystem.Play(
                 TalkClips.Last(),
                 localPosition: Random.onUnitSphere,
                 parent: transform, 
-                volume: Mathf.Lerp(MonsterTalkStartVolume, MonsterTalkEndVolume, t),
-                pitch: Mathf.Lerp(MonsterTalkStartPitch, MonsterTalkEndPitch, t),
+                volume: monsterTalk.volume,
+                pitch: monsterTalk.pitch,
                 raytraced: true
             );
-        }
+		}
 
-        yield return new WaitForSecondsRealtime(MonsterTalkDelay);
+        yield return new WaitForSecondsRealtime(MonsterTalkSpawnDelay);
         MonsterSpawner.SpawnInRange(transform.position, MonsterTalkSpawnMinDistance, MonsterTalkSpawnMaxDistance);
     }
 
